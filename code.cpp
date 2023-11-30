@@ -1,329 +1,331 @@
-#include<bits/stdc++.h> //Header file that include every standard library.
-#include<fstream>
-#define pb push_back    //push_back can be replaced by pb in our program now.
+#include <bits/stdc++.h>
+#include <fstream>
+
+#define pb push_back
 using namespace std;
 
-int temp = 0; //To check if path is avaiable or not.
-vector < string > final; //for storing the final itinerary.
-const int INF = 1000000000;
-vector<vector<pair<int, float>>> adj(9);
-vector< float > min_distance(9);
-vector< int > parent(9);
-map < string, int > mp;//Each of the node is assigned a particular value corresponding to the string of the place that they represent.
-string reverse_mp[9];
-
-int num=0;
-
-class DisjointSet{
-    vector <int> rank,par;
-public:
-    DisjointSet(int n)
-    {
-        rank.resize(n,1);
-        par.resize(n,1);
-        for(int i=1;i<n;i++)
-        {
-            parent[i]=i;
-        }
-    }
-    int findPar(int node)
-    {
-        if(node==par[node])
-        return node;
-        
-        return par[node]=findPar(par[node]);
-    }
-    void UnionByRank(int u,int v)
-    {
-        int par_u=findPar(u);
-        int par_v=findPar(v);
-        if(par_u==par_v)return;
-        
-        if(rank[par_u]<rank[par_v])
-        {
-            par[par_u]=par_v;
-        }
-        else if(rank[par_v]<rank[par_u])
-        {
-            par[par_v]=par_u;
-        }
-        else
-        {
-            par[par_u]=par_v;
-            rank[par_u]++;
-        }
-    }
-};
-class touristMap { //Class touristMap consists of all the methods used.
-        map < string, list < pair < string, float > > > m; //Container of STL where first argument is Place and Pair consists of connected Place and its Distance.
-        
-        public:
-        
-        void addPath(string u, string v, float dist) { //addPath for adding new places.
-        //Assuming Bidirectional Way
-        m[u].pb(make_pair(v, dist));
-        m[v].pb(make_pair(u, dist));
-        if(mp.find(u)==mp.end()){
-          cout<<u<<" "<<num;
-          printf("\n");
-          mp[u]=num;
-          reverse_mp[num]=u;
-          num++;
-        }
-        if(mp.find(v)==mp.end()){
-          cout<<v<<" "<<num;
-          printf("\n");
-          mp[v]=num;
-          reverse_mp[num]=v;
-          num++;
-        }
-        adj[mp[u]].push_back({mp[v],dist});
-        adj[mp[v]].push_back({mp[u],dist});
-        }
-        
-        void printAdjList() { //For printing all the connected Places from a particular place.
-        
-        for (auto j: m) {
-        cout << j.first << "-->";
-        for (auto vertex: j.second) {
-        cout << "(" << vertex.first << "," << vertex.second << ")";
-        }
-        printf("\n");
-        }
-        
-        int s;
-        for (s=0;s<9;s++)
-        {
-            for (auto f:adj[s])
-            {
-                cout<<"The first edge is from "<<s<<" "<<f.first<<" "<<f.second;
-                printf("\n");
-            }
-            }
-        }
-        
-        //   void printMap() { //printMap for printing the map manually according to the data entered.
-            cout << "WELCOME TO IIT KANPUR" << "\n"<<"\n"<<"\n";
+unordered_map <string,int> encrypt;
+unordered_map <int,string> decrypt;
+map<int,vector<pair<int,double>>> adj;
+void constructGraph(string src,string dest,double dist)
+{
+    adj[encrypt[src]].pb({encrypt[dest],dist});
+    adj[encrypt[dest]].pb({encrypt[src],dist});
     
-            cout<<"************************************************************************************"<<"\n";
-            cout<<"                                                                                    "<<"\n";
-            cout<<"                                             ____________                           "<<"\n";
-            cout<<"                                             |          |                           "<<"\n";
-            cout<<"                                             | AirStrip |                           "<<"\n";
-            cout<<"                                             |__________|                           "<<"\n";
-            cout<<"                               ____________________|                                "<<"\n";
-            cout<<"                               |                   |                                "<<"\n";
-            cout<<"                               |                   |__                              "<<"\n";
-            cout<<"                               |                      |                             "<<"\n";
-            cout<<"                               |                      |                             "<<"\n";
-            cout<<"                               |                  ____|                             "<<"\n";
-            cout<<"                               |                  |                                 "<<"\n";
-            cout<<"                               |                  |                                 "<<"\n";
-            cout<<"                               |             _____|______                           "<<"\n";
-            cout<<"                               |             |          |                           "<<"\n";
-            cout<<"                               |             | Library  |                           "<<"\n";
-            cout<<"     ____________              |             |__________|                           "<<"\n";
-            cout<<"     |          |______________|                  |                                 "<<"\n";
-            cout<<"     |Hall 12/13|              |        __________|                                 "<<"\n";
-            cout<<"     |__________|              |       |                                            "<<"\n";
-            cout<<"                               |       |                                            "<<"\n";
-            cout<<"                   __________  |       |                                            "<<"\n";
-            cout<<"                   |        |__|_______|_____                                       "<<"\n";
-            cout<<"                   |  Hall2 |  |            |                                       "<<"\n";
-            cout<<"                   |________|  |            |                                       "<<"\n";
-            cout<<"                               |  __________|                                       "<<"\n";
-            cout<<"                               |__|        ||                                       "<<"\n";
-            cout<<"                               |  | Hall 1 ||                                       "<<"\n";
-            cout<<"                               |  |________||                                       "<<"\n";
-            cout<<"                               |            |                                       "<<"\n";
-            cout<<"                               |            |                                       "<<"\n";
-            cout<<"                               |____________|                                       "<<"\n";
-            cout<<"                               |            |                                       "<<"\n";
-            cout<<"                               |            |       _____________                   "<<"\n";
-            cout<<"                               |            |       |           |                   "<<"\n";
-            cout<<"                  _____________|            |_______| Hall 6/GH |                   "<<"\n";
-            cout<<"                  |            |                    |___________|                   "<<"\n";
-            cout<<"             _____|_____       |                          |                         "<<"\n";
-            cout<<"             |         |       |__________________________|                         "<<"\n";
-            cout<<"             |  OAT    |                                                            "<<"\n";
-            cout<<"             |_________|                                                            "<<"\n";
-            cout<<"                                                                                    "<<"\n";
-            cout<<"************************************************************************************"<<"\n";
-         
-        }
-        
-        //Algorithm Block
-        void MST(vector<string> &userInput)
-        {
-            map<int,bool> t;
-            int size = userInput.size();
-            for(int i=0;i<size;i++)
-            {
-                t[mp[userInput[i]]]=true;
-            }
-            vector <pair<int,pair<int,int>>> edges;
-            for(auto it1 : adj)
-            {
-                for(auto it2 : it1)
-                {
-                    if(t.find(it1)!=t.end() && t.find(it2.first)!=t.end())
-                    {
-                        edges.push_back({it2.second,{it1,it2.first}});
-                    }
-                }
-            }
-            sort(edges.begin(),edges.end());
-            DisjointSet ds(7);
-            vector<vector<string>> ans;
-            int maxDist=0;
-            for(auto it:edges)
-            {
-                float wt=it.first;
-                int u=it.second.first;
-                int v=it.second.second;
-                if(ds.findPar(u)!=ds.findPar(v))
-                {
-                    maxDist+=wt;
-                    ds.UnionByRank(u,v);
-                    ans.push_back({reverse_mp[u],reverse_mp[v],to_string(wt)});
-                }
-            }
-            for (auto it : ans)
-            {
-                cout<<it[0]<<" -- "<<it[1]<<" = "<<it[2]<<"\n";
-            }
-        }
-        
-        
-        long long dijkstra(string source, string destination) {
-        int s= mp[source];
-        int n = 9;
-        min_distance.assign(n, INF);
-        parent.assign(n, -1);
-        vector<bool> u(n, false);
-        
-        min_distance[s] = 0;
-        for (int i = 0; i < n; i++) {
-           int v = -1;
-           for (int j = 0; j < n; j++) {
-               if (!u[j] && (v == -1 || min_distance[j] < min_distance[v]))
-                   v = j;
-            }
-        
-            if (min_distance[v] == INF)
-                break;
-        
-            u[v] = true;
-            for (auto edge : adj[v]) {
-                int to = edge.first;
-                int len = edge.second;
-        
-                if (min_distance[v] + len < min_distance[to]) {
-                   min_distance[to] = min_distance[v] + len;
-                   cout<<min_distance[to]<<" "<<to;
-                   printf("\n");
-                   parent[to] = v;
-                }
-            }
-        }
-        cout<<mp[destination];
-        printf("\n");
-        return min_distance[mp[destination]];
+    return;
+}
+
+void mapping(int &checkpoint,string src,string dest)
+{
+    if(encrypt.find(src)==encrypt.end())
+    {
+        encrypt[src]=checkpoint;
+        decrypt[checkpoint]=src;
+        checkpoint++;
     }
-        
-
-};
-
-int main() {
-    system("color 1E"); //it changes the background color to blue.
-    touristMap ourMap;
-  // Adding paths to our Map.
-  /*for(auto edge: graph){
-      ourMap.addPath(edge.first.first, edge.first.second, edge.second);
-  }*/
-//   ourMap.addPath("AppuGhar", "RedFort", 4);
-//   ourMap.addPath("AppuGhar", "ChandaniChowk", 2);
-//   ourMap.addPath("RedFort", "AppuGhar", 6);
-//   ourMap.addPath("RedFort", "HauzKhas", 6);
-//   ourMap.addPath("HauzKhas", "IndiaGate", 5);
-//   ourMap.addPath("HauzKhas", "LotusTemple", 3);
-//   ourMap.addPath("IndiaGate", "DaryaGanj", 1);
-//   ourMap.addPath("IndiaGate", "LotusTemple", 3);
-//   ourMap.addPath("DaryaGanj", "ChandaniChowk", 1);
-//   ourMap.addPath("ChandaniChowk", "JamaMasjid", 2);
-//   ourMap.addPath("JamaMasjid", "JantarMantar", 3);
-//   ourMap.addPath("JantarMantar", "LotusTemple", 6);
-//   ourMap.addPath("JamaMasjid", "LotusTemple", 3);                  
-  // Printing all the Connections.
-    ifstream file("text.txt");
-    if(!file.is_open()){
-        cout<<"File failed to open"<<endl;
-        return 0;
-    }
-
-    string srchall, desthall, dist;
-    vector<string>source, destination;
-    vector<float>all_dist;
-    float distance;
-
-    string mystring;
-    string line;
     
-    while(getline(file,line)){
-        stringstream ss(line);
-        getline(ss, srchall,',');
-        source.push_back(srchall);
-        getline(ss, desthall,',');
-        destination.push_back(desthall);
-        getline(ss, dist,',');
-        distance=stof(dist);
-        all_dist.push_back(distance);
-        cout<<distance<<endl;
+    if(encrypt.find(dest)==encrypt.end())
+    {    
+        encrypt[dest]=checkpoint;
+        decrypt[checkpoint]=dest;
+        checkpoint++;
     }
-    file.close();
+    return;
+}
+void printHead()
+{
+    cout<<"\n";
+    cout << "                         WELCOME TO IIT KANPUR                        " << "\n";
+    cout<<"************************************************************************************"<<"\n";
+    cout<<"                                                                                    "<<"\n";
+    cout<<"                                             ____________                           "<<"\n";
+    cout<<"                                             |          |                           "<<"\n";
+    cout<<"                                             | AirStrip |                           "<<"\n";
+    cout<<"                                             |__________|                           "<<"\n";
+    cout<<"                               ____________________|                                "<<"\n";
+    cout<<"                               |                   |                                "<<"\n";
+    cout<<"                               |                   |__                              "<<"\n";
+    cout<<"                               |                      |                             "<<"\n";
+    cout<<"                               |                      |                             "<<"\n";
+    cout<<"                               |                  ____|                             "<<"\n";
+    cout<<"                               |                  |                                 "<<"\n";
+    cout<<"                               |                  |                                 "<<"\n";
+    cout<<"                               |              ___|____                           "<<"\n";
+    cout<<"                               |             |          |                           "<<"\n";
+    cout<<"                               |             | Library  |                           "<<"\n";
+    cout<<"     ____________              |             |__________|                           "<<"\n";
+    cout<<"     |          |______________|                  |                                 "<<"\n";
+    cout<<"     |Hall 12/13|              |        __________|                                 "<<"\n";
+    cout<<"     |__________|              |       |                                            "<<"\n";
+    cout<<"                               |       |                                            "<<"\n";
+    cout<<"                   __________  |       |                                            "<<"\n";
+    cout<<"                   |        |_|_______|___                                       "<<"\n";
+    cout<<"                   |  Hall2 |  |            |                                       "<<"\n";
+    cout<<"                   |________|  |            |                                       "<<"\n";
+    cout<<"                               |  __________|                                       "<<"\n";
+    cout<<"                               |__|        ||                                       "<<"\n";
+    cout<<"                               |  | Hall 1 ||                                       "<<"\n";
+    cout<<"                               |  |________||                                       "<<"\n";
+    cout<<"                               |            |                                       "<<"\n";
+    cout<<"                               |            |                                       "<<"\n";
+    cout<<"                               |____________|                                       "<<"\n";
+    cout<<"                               |            |                                       "<<"\n";
+    cout<<"                               |            |       _____________                   "<<"\n";
+    cout<<"                               |            |       |           |                   "<<"\n";
+    cout<<"                  _____________|            |_______| Hall 6/GH |                   "<<"\n";
+    cout<<"                  |            |                    |___________|                   "<<"\n";
+    cout<<"              ___|___        |                          |                         "<<"\n";
+    cout<<"             |         |       |__________________________|                         "<<"\n";
+    cout<<"             |  OAT    |                                                            "<<"\n";
+    cout<<"             |_________|                                                            "<<"\n";
+    cout<<"                                                                                    "<<"\n";
+    cout<<"************************************************************************************"<<"\n";
+    cout<<"HOW CAN I HELP YOU WITH ?"<<"\n";
+    cout<<"1.TO GET SHORTEST PATH BETWEEN TWO LOCATIONS -- TYPE 1"<<"\n";
+    cout<<"2.TO GET SHORTEST PATH BETWEEN ALL THE LOCATIONS -- TYPE 2"<<"\n";
+    cout<<"3.TO GET A TRAVELLING PLAN FOR EXPLORING IIT KANPUR CAMPUS  -- TYPE 3"<<"\n";
+    cout<<"PRESS ENTER"<<"\n";
+}
+class Disjointset{
+    public:
+        vector<int> rank,parent;
+        Disjointset(int n)
+        {
+            rank.resize(n+1,0);
+            parent.resize(n+1,0);
+            for(int i=0;i<=n;i++)
+            {
+                parent[i]=i;
+            }
+        }
+        int findurpar(int node)
+        {
+            if(parent[node]==node)
+            return node;
+            return parent[node]=findurpar(parent[node]);
+        }
+        void unionbyrank(int x,int y)
+        {
+            int par_x=findurpar(x);
+            int par_y=findurpar(y);
+            if(par_x==par_y) return;
+            if(rank[par_x]<rank[par_y])
+            {
+                parent[par_x]=par_y;
+            }
+            else if(rank[par_y]<rank[par_x])
+            {
+                parent[par_y]=par_x;
+            }
+            else
+            {
+                parent[par_x]=par_y;
+                rank[par_y]++;
+            }
 
-    int n=source.size();
+        }
+};
+//Algorithm block
+double Djikstras(string source, string destination) {
+    vector<int> path(encrypt.size());
+    vector<double> distance(encrypt.size(), (double)1e9);
+    set<pair<double, int>> st;
+    st.insert({0, encrypt[source]});
+    distance[encrypt[source]] = 0;
+    path[encrypt[source]] = encrypt[source];
+
+    while (!st.empty()) {
+        auto it = *st.begin();
+        double d = it.first;
+        int node = it.second;
+        st.erase(it); // Remove the current node from the set
+
+        for (auto it1 : adj[node]) {
+            int adjnode = it1.first;
+            double edgewt = it1.second;
+            if (d + edgewt < distance[adjnode]) {
+                if (distance[adjnode] != (double)1e9) {
+                    st.erase({distance[adjnode], adjnode});
+                }
+                distance[adjnode] = d + edgewt;
+                path[adjnode] = node;
+                st.insert({distance[adjnode], adjnode});
+            }
+        }
+    }
+    vector<string> ans;
+    int start = encrypt[destination];
+    while (path[start] != start) {
+        ans.push_back(decrypt[start]);
+        start = path[start];
+    }
+    ans.push_back(decrypt[start]);
+    int n = ans.size();
+    cout << "Path to follow: ";
+    for (int i = n - 1; i > 0; i--) {
+        cout << ans[i] << " --> ";
+    }
+    cout << ans[0] << "\n";
+    
+    return distance[encrypt[destination]]; // Return the distance after the loop
+}
+void floydWarshall()
+{
+    int n=encrypt.size();
+    vector<vector<double>> adjmat(n,vector<double>(n,(double)1e9));
+    for(auto it:adj)
+    {
+        for(auto it1:it.second)
+        {
+            adjmat[it.first][it1.first]=it1.second;
+        }
+    }
     for(int i=0;i<n;i++)
     {
-        ourMap.addPath(source[i],destination[i],all_dist[i]);
-    }
-    ourMap.printAdjList();
-  //Printing the Map.
-  //ourMap.printMap();
-
-    string source, destination;
-
-    cout << "Enter your Source and Destination" << endl;
-    cout << "Source :" << " ";
-    cin >> source;
-
-    cout << "Destination:" << " ";
-    cin >> destination;
-
-    vector < string > v;
-    map < string, bool > marked; //For checking out if the place is visited before.
-
-  ///passing source,destination and time in our backtracking algorithm..
-    temp = ourMap.dijkstra(source, destination);
-
-    if (temp == INF) {
-        cout << "Sorry,no path is possible" << endl;
-    }
-    else {
-        cout<<" The shortest distance is "<<" "<<temp;
-        printf("\n");
-        cout << "Best way to go is ";
-        cout << endl;
-    for (int i = 0; i < 9; ++i) {
-        if(destination==source){
-            break;
+        for(int j=0;j<n;j++)
+        {
+            if(i==j)
+            adjmat[i][j]=0;
         }
-        cout << destination << "-->";
-        destination=reverse_mp[parent[mp[destination]]];
     }
-    cout << destination;
-    cout << endl << endl;
-    cout << "Wohoo we will visit " << " " << final.size() << " places and reach our Destination on Time" << endl;
-  }
-  return 0;
+    for(int k=0;k<n;k++)
+    {
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(adjmat[i][j]>(adjmat[i][k]+adjmat[k][j]) && adjmat[k][j]!=(double)1e9 && adjmat[i][k]!=(double)1e9)
+                adjmat[i][j]=adjmat[i][k]+adjmat[k][j];
+            }
+        }
+    }
+    cout<<"sources"<<"                  "<< "Destinations"<<"\n";
+    for(int i=0;i<n;i++)
+    {
+        cout<<decrypt[i]<<" : ";
+        for(int j=0;j<n;j++)
+        {
+            cout<<"["<<decrypt[j]<<","<<adjmat[i][j]<<"]"<<",";
+        }
+        cout<<"\n";
+    }
+    return;
+}
+double kruskals(string source)
+{
+    // int start=encrypt[source];
+    int n=encrypt.size();
+    Disjointset ds(n);
+    vector<pair<double,pair<int,int>>>edges;
+    for(auto it:adj)
+    {
+        for(auto it1:it.second)
+        {
+            if(it1.first>it.first)
+            edges.pb({it1.second,{it.first,it1.first}});
+        }
+    }
+    sort(edges.begin(),edges.end());
+    double mst=0;
+    for(auto it :edges)
+    {
+        double wt=it.first;
+        int x=it.second.first;
+        int y=it.second.second;
+        if(ds.findurpar(x)!=ds.findurpar(y))
+        {
+            mst+=wt;
+            ds.unionbyrank(x,y);
+        }
+    }
+    vector<vector<string>> ans;
+    vector<int> vis(n,0);
+    vector<string> temp;
+    for(int i=0;i<n;i++)
+    {
+        if(vis[i]==0)
+        {
+            int start=i;
+            while(ds.parent[start]!=start)
+            {
+                temp.pb(decrypt[i]);
+            }
+            ans.pb(temp);
+        }
+    }
+    for(int i=0;i<ans.size();i++)
+    {
+        for(int j=ans[i].size()-1;i>0;i--)
+        {
+            cout<<ans[i][j]<<" -- ";
+        }
+        cout<<ans[i][0]<<"\n";
+    }
+    return mst;
+}
+int main()
+{
+    ifstream file;
+    file.open("Project.txt");
+    string line;
+    int checkpoint=0;
+    while(file.good())
+    {
+        getline(file,line);
+        int i=0;
+        string temp="",dest,src;
+        double dist=0;
+        int count=0;
+        while(line[i]!='/')
+        {
+            if(line[i]==',')
+            {
+                if(count==0)
+                {
+                    src=temp;
+                    count++;
+                }
+                else if(count==1)
+                {
+                    dest=temp;
+                    count++;
+                }
+                temp="";
+            }
+            else
+            {
+                temp.pb(line[i]);
+            }
+            i++;
+        }
+        dist=stod(temp);
+        mapping(checkpoint,src,dest);
+        constructGraph(src,dest,dist);
+    }
+    printHead();
+    int input;
+    // cin>>input;
+    cin>>input;
+    if(input==1) //djikstras
+    {
+        string source,dst;
+        cout<<"ENTER SOURCE LOCATION : "<<"\n";
+        cin>>source;
+        cout<<"ENTER DESTINATION LOCATION : "<<"\n";
+        cin>>dst;
+        cout<<"Distance :"<<Djikstras(source,dst)<<"km"<<"\n";
+    }
+    else if(input==2)
+    {
+        floydWarshall();
+    } 
+    else
+    {
+        string source;
+        cout<<"ENTER SOURCE LOCATION : "<<"\n";
+        cin>>source;
+        cout<<"TOTAL DISTANCE : "<<kruskals(source)<<"\n";
+
+    }
+    return 0;
 }
